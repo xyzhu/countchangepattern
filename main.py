@@ -53,11 +53,13 @@ def main(argv):
                 file_name like ? and scmlog.is_bug_fix=1;"""
         db.execute_statement_with_param(query, (start_time, end_time, repo_id, "%.java"), cursor)
         result = cursor.fetchall()
+        numhunks = 0
         for i in range(0, len(result)):
             patch_content = result[i][0]
-            parse_patch_content(patch_content, i)
+            leng = parse_patch_content(patch_content, i)
+            numhunks+=leng
         #save_change_to_file(db, cursor, start_time, end_time)
-        print("Finished save to files.")
+        print("Finished save to files. "+str(numhunks)+" hunks totally.")
         cnn.close()
     except MySQLdb.Error, e:
         print "Error %d: %s" % (e.args[0], e.args[1])

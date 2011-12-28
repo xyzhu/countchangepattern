@@ -33,6 +33,6 @@ def parse_patch_content(patch_content, m):
         new_hunk = re.sub('(?<=\n)\-.*\n','',hunk)
         new_hunk = re.sub("\n\+","\n ",new_hunk)
         m = save_change_to_file(hunk, old_hunk, new_hunk, m)
-    return leng
+    return leng-1
             
     
