@@ -23,8 +23,8 @@ def hunk_source_to_xml(file_path,num_hunk):
     diff = ""
     for i in range(1,num_hunk):
         file_name = file_path + str(i)
-        os.system("/home/xyzhu/change-pattern/src2srcml -l Java "+file_name+"_old.java -o "+file_name+"_old.xml")
-        os.system("/home/xyzhu/change-pattern/src2srcml -l Java "+file_name+"_new.java -o "+file_name+"_new.xml")
+        os.system(file_path+"src2srcml -l Java "+file_name+"_old.java -o "+file_name+"_old.xml")
+        os.system(file_path+"src2srcml -l Java "+file_name+"_new.java -o "+file_name+"_new.xml")
         diff += compare_xml(file_name)
     return diff
 def compare_xml(file_name):

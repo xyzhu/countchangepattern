@@ -18,7 +18,6 @@ def extract_patch(cursor,db,start_time,end_time,repo_id,buggy,file_path):
     db.execute_statement_with_param(query, (start_time, end_time, repo_id, "%.java"), cursor)
     patches = cursor.fetchall()
     pattern = [ [0 for i in range(0,18)] for j in range(0,18)]
-    print pattern[17][17]
     result = [0 for i in range(0,18)]
     r = [0 for i in range(0,18)]
     num_hunk = 0
