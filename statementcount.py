@@ -10,7 +10,7 @@ import string
 def count_statement(file_path,num_hunk):
     r = [0 for i in range(0,18)]
     statements = ["call","if","for","while","do","switch","case","continue",
-                 "break","return","else","function","function_del","decl_stmt",
+                 "break","return","else","function","function_decl","decl_stmt",
                  "constructor","try","catch","throw"]
     diff = hunk_source_to_xml(file_path,num_hunk)
     leng = len(statements)
