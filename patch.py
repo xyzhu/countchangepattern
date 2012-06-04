@@ -35,17 +35,17 @@ def extract_patch(cursor,db,start_time,end_time,repo_id,buggy,file_path):
                 file_name like ?;"""
     db.execute_statement_with_param(query, (start_time, end_time, repo_id, "%.java"), cursor)
     patches = cursor.fetchall()
-    pattern = [ [0 for i in range(0,18)] for j in range(0,18)]
+    pattern = [ [0 for i in range(0,19)] for j in range(0,19)]
     #if n(n>1) of s statement changed in a patch, result_num should add n while result_time should add 1
-    result_num = [0 for i in range(0,18)]
-    result_time = [0 for i in range(0,18)]
-    r = [0 for i in range(0,18)]
+    result_num = [0 for i in range(0,19)]
+    result_time = [0 for i in range(0,19)]
+    r = [0 for i in range(0,19)]
     num_hunk = 0
     for i in range(0, len(patches)):
         patch = patches[i][0]
         num_hunk = split_patch_to_hunk(patch,file_path)
         r = count_statement(file_path,num_hunk)
-        for j in range(0,18):
+        for j in range(0,19):
             if r[j]!=0:
                     result_num[j] += r[j]
                     result_time[j] += 1
@@ -56,10 +56,10 @@ def save_result(result_num,result_time,file_path,repo_id,num_hunk,pattern,start_
     s_num = start_time+","
     s_time = start_time+","
     p = ""
-    for i in range(0,18):
+    for i in range(0,19):
         s_num += str(result_num[i])+","
         s_time += str(result_time[i])+","
-        for j in range(0,18):
+        for j in range(0,19):
             p += str(pattern[i][j])+","
         p += "\n"
     f = open(file_path+"project_"+repo_id+"_num.csv",'a',)
@@ -75,9 +75,9 @@ def save_result(result_num,result_time,file_path,repo_id,num_hunk,pattern,start_
         os.system("rm "+file_path+"*.java")
         os.system("rm "+file_path+"*.xml")
 def mine_pattern(r,pattern):
-    for i in range(0,18):
+    for i in range(0,19):
         if r[i] != 0:
-            for j in range(i+1,18):
+            for j in range(i+1,19):
                 if r[j] != 0:
                     pattern[i][j] = pattern[i][j]+1
     return pattern
