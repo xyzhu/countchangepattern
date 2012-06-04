@@ -1,9 +1,27 @@
 #!/usr/bin/env python
 
 import os
-from hunk import split_patch_to_hunk
+from hunk import split_patch_to_hunk, get_num_hunk_from_patch
 from statementcount import count_statement
 
+def get_num_hunk(cursor,db,start_time,end_time,repo_id,buggy,file_path):
+    if buggy:
+        query = """select patch from patches,scmlog,files where patches.commit_id 
+                 = scmlog.id and scmlog.commit_date >= ? and scmlog.commit_date < ?
+                and scmlog.repository_id=? and patches.file_id=files.id and 
+                file_name like ? and is_bug_fix=1;"""
+    else:
+        query = """select patch from patches,scmlog,files where patches.commit_id 
+                = scmlog.id and scmlog.commit_date >= ? and scmlog.commit_date < ?
+                and scmlog.repository_id=? and patches.file_id=files.id and 
+                file_name like ?;"""
+    db.execute_statement_with_param(query, (start_time, end_time, repo_id, "%.java"), cursor)
+    patches = cursor.fetchall()
+    num_hunk = 0
+    for i in range(0, len(patches)):
+        patch = patches[i][0]
+        num_hunk += get_num_hunk_from_patch(patch,file_path)
+    return num_hunk
 def extract_patch(cursor,db,start_time,end_time,repo_id,buggy,file_path):
     if buggy:
         query = """select patch from patches,scmlog,files where patches.commit_id 

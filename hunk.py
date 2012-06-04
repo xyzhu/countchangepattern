@@ -5,10 +5,14 @@
 
 import re
 
+def get_num_hunk_from_patch(patch,file_path):
+    patch_split = re.split("@@.*@@", patch)
+    num_hunk = len(patch_split)-1
+    return num_hunk
 def split_patch_to_hunk(patch,file_path):
     patch_split = re.split("@@.*@@", patch)
     num_hunk = len(patch_split)
-    for i in range(1,num_hunk): 
+    for i in range(1,num_hunk):
         hunk = patch_split[i]
         old_hunk = re.sub('(?<=\n)\+.*\n','',hunk)
         old_hunk = re.sub("\n\-","\n ",old_hunk)

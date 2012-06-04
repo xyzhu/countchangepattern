@@ -6,7 +6,7 @@
 
 import getopt
 from Database import *
-from patch import extract_patch
+from patch import extract_patch, get_num_hunk
 
 def main(argv):
     # Short (one letter) options. Those requiring argument followed by :
@@ -53,8 +53,9 @@ def main(argv):
         cnn = db.connect()
         cursor = cnn.cursor()
         extract_patch(cursor,db,start_time,end_time,repo_id,buggy,file_path)
+        total_num_hunk = get_num_hunk(cursor,db,start_time,end_time,repo_id,buggy,file_path)
         cnn.close()
-        print "Finish. Repository: "+ repo_id +", time: " + start_time+"-" +end_time+", bug: "+str(buggy)
+        print "Finish. Repository: "+ repo_id +", time: " + start_time+"-" +end_time+", bug: "+str(buggy) + ", Num_hunks: "+str(total_num_hunk)
     except MySQLdb.Error, e:
         print "Error %d: %s" % (e.args[0], e.args[1])
 
