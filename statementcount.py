@@ -60,5 +60,5 @@ def count_assignment(file_path,num_hunk):
                         line_number = line_number+1
                     else:
                         break
-            num_assign += string.count(one_diff,"=")
+            num_assign += string.count(one_diff,"=") - string.count(one_diff,"==")*2 - string.count(one_diff,"!=") - string.count(one_diff,">=") - string.count(one_diff,"<=")
     return num_assign
