@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os
+import os,re,string
 from hunk import split_patch_to_hunk, get_num_hunk_from_patch
 from statementcount import count_statement
 
@@ -39,18 +39,33 @@ def extract_patch(cursor,db,start_time,end_time,repo_id,buggy,file_path):
     #if n(n>1) of s statement changed in a patch, result_num should add n while result_time should add 1
     result_num = [0 for i in range(0,19)]
     result_time = [0 for i in range(0,19)]
-    r = [0 for i in range(0,19)]
+    r = [0 for i in range(0,18)]
+    result = [0 for i in range(0,19)]
     num_hunk = 0
     for i in range(0, len(patches)):
         patch = patches[i][0]
+        num_assignment = count_assignment(patch)
         num_hunk = split_patch_to_hunk(patch,file_path)
         r = count_statement(file_path,num_hunk)
+        for j in range(0,18):
+            result[j] = r[j]
+        result[18] = num_assignment
         for j in range(0,19):
-            if r[j]!=0:
-                    result_num[j] += r[j]
+            if result[j]!=0:
+                    result_num[j] += result[j]
                     result_time[j] += 1
-        pattern = mine_pattern(r, pattern)
+        pattern = mine_pattern(result, pattern)
     save_result(result_num,result_time,file_path,repo_id,num_hunk,pattern,start_time)
+
+def count_assignment(patch):
+    num_assign = 0
+    patch_split = re.split("\n",patch)
+    leng = len(patch_split)
+    for i in range(0,leng):
+        patch_line = patch_split[i]
+        if (patch_line.startswith("+") or patch_line.startswith("-")) and (patch_line.startswith("+++")==False and patch_line.startswith("---")==False):
+            num_assign += string.count(patch_line,"=") - string.count(patch_line,"==")*2 - string.count(patch_line,"!=") - string.count(patch_line,">=") - string.count(patch_line,"<=") - string.count(patch_line,"?=")
+    return num_assign
 
 def save_result(result_num,result_time,file_path,repo_id,num_hunk,pattern,start_time):
     s_num = start_time+","
@@ -74,10 +89,10 @@ def save_result(result_num,result_time,file_path,repo_id,num_hunk,pattern,start_
     if num_hunk:
         os.system("rm "+file_path+"*.java")
         os.system("rm "+file_path+"*.xml")
-def mine_pattern(r,pattern):
+def mine_pattern(result,pattern):
     for i in range(0,19):
-        if r[i] != 0:
+        if result[i] != 0:
             for j in range(i+1,19):
-                if r[j] != 0:
+                if result[j] != 0:
                     pattern[i][j] = pattern[i][j]+1
     return pattern
